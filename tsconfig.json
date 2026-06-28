@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "lib": ["ES2019"],
+    "module": "None",
+    "moduleResolution": "node",
+    "types": ["google-apps-script"],
+    "strict": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": false,
+    "allowJs": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "experimentalDecorators": false
+  },
+  "include": ["gas/**/*.ts"]
+}

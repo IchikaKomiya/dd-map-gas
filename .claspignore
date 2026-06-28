@@ -1,0 +1,15 @@
+# clasp が GAS にpushしないファイル（rootDir=./gas のため対象は gas/ 配下のみ）
+**/node_modules/**
+**/.git/**
+**/.DS_Store
+web/**
+.github/**
+package.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+tsconfig.json
+.gitignore
+.clasp.json
+.clasprc.json
+.env
+README.md

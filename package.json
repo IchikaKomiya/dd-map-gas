@@ -1,0 +1,26 @@
+{
+  "name": "dd-map-gas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "dd-map モノレポ: GAS Web App バックエンド (gas/) + 登録/管理フロント (web/)",
+  "scripts": {
+    "login": "clasp login",
+    "create": "clasp create --type sheets --rootDir ./gas",
+    "push": "clasp push",
+    "pushw": "clasp push --watch",
+    "deploy": "clasp deploy",
+    "pull": "clasp pull",
+    "open": "clasp open",
+    "logs": "clasp logs",
+    "typecheck": "tsc --noEmit",
+    "dev": "pnpm --filter dd-map-web dev",
+    "web:build": "pnpm --filter dd-map-web build",
+    "web:typecheck": "pnpm --filter dd-map-web typecheck"
+  },
+  "devDependencies": {
+    "@google/clasp": "^2.4.2",
+    "@types/google-apps-script": "^1.0.83",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@10.0.0"
+}
