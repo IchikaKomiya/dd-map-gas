@@ -117,14 +117,45 @@ function handleApi(
 
 // ---- 認証 ----
 
+// ログイン総当たり対策（公開エンドポイント由来の唯一の穴を塞ぐ）。
+// doPost は呼び出し元IPを取得できないため「全体での失敗回数」スロットル。
+// 正常運用（取得・送信等）は一切制限しない。失敗ログインのみ対象。
+const LOGIN_FAIL_LIMIT = 10; // この回数の失敗が溜まるとロック
+const LOGIN_FAIL_WINDOW_SEC = 900; // ロック解除までの時間（15分）
+const LOGIN_FAIL_CACHE_KEY = "login_fail_count";
+
+function loginFailCount(): number {
+  return Number(CacheService.getScriptCache().get(LOGIN_FAIL_CACHE_KEY) ?? "0");
+}
+
+function recordLoginFail(): void {
+  const cache = CacheService.getScriptCache();
+  const next = loginFailCount() + 1;
+  // put のたびにTTLが更新される（＝最後の失敗から15分で自然リセット）
+  cache.put(LOGIN_FAIL_CACHE_KEY, String(next), LOGIN_FAIL_WINDOW_SEC);
+}
+
+function clearLoginFail(): void {
+  CacheService.getScriptCache().remove(LOGIN_FAIL_CACHE_KEY);
+}
+
 function handleLogin(payload: Record<string, unknown>): { token: string; role: Role } {
+  if (loginFailCount() >= LOGIN_FAIL_LIMIT) {
+    logEvent("WARN", "login", "throttled: too many failed attempts");
+    throw new Error("ログイン試行が多すぎます。しばらく時間をおいて再試行してください。");
+  }
+
   const password = String(payload.password ?? "");
   const adminPw = getOptionalProp(PROP_KEYS.ADMIN_PASSWORD, "");
   const userPw = getOptionalProp(PROP_KEYS.USER_PASSWORD, "");
   let role: Role | null = null;
   if (adminPw && password === adminPw) role = "admin";
   else if (userPw && password === userPw) role = "user";
-  if (!role) throw new Error("パスワードが正しくありません。");
+  if (!role) {
+    recordLoginFail();
+    throw new Error("パスワードが正しくありません。");
+  }
+  clearLoginFail(); // 成功したら失敗カウントをリセット
   logEvent("INFO", "login", `role=${role}`);
   return { token: signToken(role), role };
 }
