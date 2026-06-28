@@ -28,13 +28,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # pnpm のバージョンは package.json の "packageManager" から解決する
+      # （ここで version を指定すると二重指定エラーになる）
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       # ルートに pnpm workspace の単一ロックファイルがあるため、ルートで install する
